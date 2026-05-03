@@ -1,0 +1,156 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Flame palette */
+    --bg: #0d0805;
+    --surface: #120c06;
+    --card: #1a1208;
+    --flame-peak: #e8973a;
+    --flame-warm: #c4701a;
+    --text: #f5ede0;
+    --text-muted: #a89070;
+    --border: #c4701a20;
+    --border-lit: #c4701a50;
+
+    /* GSAP-driven — starts below fold */
+    --flame-y: 80%;
+
+    /* shadcn compat — maps to flame palette */
+    --background: #0d0805;
+    --foreground: #f5ede0;
+    --card-foreground: #f5ede0;
+    --popover: #1a1208;
+    --popover-foreground: #f5ede0;
+    --primary: #e8973a;
+    --primary-foreground: #0d0805;
+    --secondary: #1a1208;
+    --secondary-foreground: #f5ede0;
+    --muted: #120c06;
+    --muted-foreground: #a89070;
+    --accent: #1a1208;
+    --accent-foreground: #f5ede0;
+    --destructive: #ef4444;
+    --input: #c4701a15;
+    --ring: #c4701a50;
+    --radius: 0px;
+  }
+
+  html,
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    scroll-behavior: smooth;
+  }
+
+  html {
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+}
+
+/* ── Flame overlay ──────────────────────────────────────────── */
+#flame-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 600px 500px at 50% var(--flame-y),
+    #e8973a18 0%,
+    #c4701a0a 35%,
+    #8b4a1205 60%,
+    transparent 80%
+  );
+  will-change: background;
+}
+
+@media (max-width: 767px) {
+  #flame-overlay {
+    background: radial-gradient(
+      ellipse 350px 300px at 50% var(--flame-y),
+      #e8973a18 0%,
+      #c4701a0a 35%,
+      #8b4a1205 60%,
+      transparent 80%
+    );
+  }
+}
+
+/* ── Card flame glow ────────────────────────────────────────── */
+.flame-card {
+  border: 1px solid var(--border);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.flame-card.lit {
+  border-color: var(--border-lit);
+  box-shadow: 0 0 40px #c4701a08;
+}
+
+/* ── Typography utilities ───────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.font-body {
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.text-flame-gradient {
+  background: linear-gradient(135deg, var(--flame-peak), var(--flame-warm));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Section label eyebrow ──────────────────────────────────── */
+.section-label {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-lit);
+  border-radius: 0;
+}
+
+/* ── Form elements override ─────────────────────────────────── */
+.flame-input {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  color: var(--text) !important;
+  transition: border-color 0.2s ease;
+}
+
+.flame-input:focus-visible {
+  border-color: var(--flame-warm) !important;
+  ring: none !important;
+  outline: none;
+  box-shadow: 0 0 0 1px var(--flame-warm) !important;
+}
+
+.flame-input::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 0.6;
+}

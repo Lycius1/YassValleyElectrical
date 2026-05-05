@@ -3,12 +3,9 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google"
 import dynamic from "next/dynamic"
 import "./globals.css"
 import Header from "@/components/Header"
-import Footer from "@/components/Footer"
 import MobileCallCTA from "@/components/MobileCallCTA"
 
-const GSAPProvider = dynamic(() => import("@/components/GSAPProvider"), {
-  ssr: false,
-})
+const MapIntro = dynamic(() => import("@/components/MapIntro"), { ssr: false })
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -45,12 +42,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased overflow-x-hidden">
-        {/* Flame gradient overlay — GSAP drives --flame-y on <html> */}
-        <div id="flame-overlay" aria-hidden="true" />
-        <GSAPProvider />
+        <MapIntro />
         <Header />
-        <main className="relative z-10">{children}</main>
-        <Footer />
+        {children}
         <MobileCallCTA />
       </body>
     </html>

@@ -1,17 +1,7 @@
-import Hero from "@/components/sections/Hero"
-import Services from "@/components/sections/Services"
-import About from "@/components/sections/About"
-import Reviews from "@/components/sections/Reviews"
-import Contact from "@/components/sections/Contact"
+import dynamic from 'next/dynamic'
+
+const CinematicScene = dynamic(() => import('@/components/CinematicScene'), { ssr: false })
 
 export default function Home() {
-  return (
-    <>
-      <Hero />
-      <Services />
-      <About />
-      <Reviews />
-      <Contact />
-    </>
-  )
+  return <CinematicScene />
 }

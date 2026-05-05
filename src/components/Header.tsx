@@ -2,13 +2,6 @@
 
 import { useState, useEffect } from "react"
 
-function scrollToSection(id: string) {
-  const el = document.getElementById(id)
-  if (!el) return
-  const top = el.getBoundingClientRect().top + window.scrollY - 80
-  window.scrollTo({ top, behavior: "smooth" })
-}
-
 const navLinks = [
   { label: "Services", id: "services" },
   { label: "About", id: "about" },
@@ -16,114 +9,155 @@ const navLinks = [
   { label: "Contact", id: "contact" },
 ]
 
+function jumpTo(section: string) {
+  window.dispatchEvent(new CustomEvent('yve-nav-jump', { detail: { section } }))
+}
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 50)
+    const handler = () => setScrolled(window.scrollY > 80)
     window.addEventListener("scroll", handler, { passive: true })
     return () => window.removeEventListener("scroll", handler)
   }, [])
 
-  // Lock body scroll when menu open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : ""
-    return () => {
-      document.body.style.overflow = ""
-    }
+    return () => { document.body.style.overflow = "" }
   }, [menuOpen])
 
+  const headerStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 50,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '20px 32px',
+    transition: 'background 0.3s ease, border-bottom 0.3s ease',
+    ...(scrolled ? {
+      background: 'rgba(8, 5, 2, 0.75)',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      borderBottom: '0.5px solid rgba(255, 200, 100, 0.08)',
+    } : {
+      background: 'transparent',
+    }),
+  }
+
   return (
-    <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-[#0d0805]/88 backdrop-blur-md"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-20">
-        {/* Logo */}
-        <button
-          onClick={() => scrollToSection("hero")}
-          className="flex flex-col items-start leading-none gap-0.5"
-          aria-label="Yass Valley Electrical — back to top"
-        >
-          <span className="font-display text-[1.1rem] font-light tracking-[0.3em] text-[#f5ede0] uppercase">
-            Yass Valley
-          </span>
-          <span className="font-body text-[0.6rem] tracking-[0.35em] text-[#a89070] uppercase">
-            Electrical
-          </span>
-        </button>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => scrollToSection(link.id)}
-              className="font-body text-sm text-[#a89070] hover:text-[#f5ede0] transition-colors duration-200 tracking-wide"
-            >
-              {link.label}
-            </button>
-          ))}
-          <a
-            href="tel:0412999842"
-            className="font-body text-sm px-5 py-2.5 border border-[#c4701a] text-[#e8973a] hover:bg-[#c4701a] hover:text-[#0d0805] transition-all duration-200 tracking-wide"
-          >
-            Call Jack
-          </a>
-        </nav>
-
-        {/* Hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden flex flex-col justify-center gap-[5px] w-8 h-8 relative z-[60]"
-          aria-label="Toggle menu"
-          aria-expanded={menuOpen}
-        >
-          <span
-            className={`block w-6 h-px bg-[#a89070] transition-all duration-300 origin-center ${
-              menuOpen ? "rotate-45 translate-y-[7px]" : ""
-            }`}
-          />
-          <span
-            className={`block w-6 h-px bg-[#a89070] transition-all duration-300 ${
-              menuOpen ? "opacity-0 scale-x-0" : ""
-            }`}
-          />
-          <span
-            className={`block w-6 h-px bg-[#a89070] transition-all duration-300 origin-center ${
-              menuOpen ? "-rotate-45 -translate-y-[7px]" : ""
-            }`}
-          />
-        </button>
-      </div>
-
-      {/* Mobile overlay menu */}
-      <div
-        className={`md:hidden fixed inset-0 bg-[#0d0805]/98 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-10 transition-all duration-500 ${
-          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+    <header style={headerStyle}>
+      {/* Logo */}
+      <button
+        onClick={() => jumpTo('hero')}
+        style={{ display: 'flex', flexDirection: 'column', gap: '3px', border: 'none', background: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+        aria-label="Yass Valley Electrical — back to top"
       >
-        {navLinks.map((link, i) => (
+        <span style={{
+          fontFamily: 'var(--font-body), system-ui, sans-serif',
+          fontSize: '13px', fontWeight: 500, letterSpacing: '0.18em',
+          color: '#e8d8b8', textTransform: 'uppercase', lineHeight: 1,
+        }}>
+          Yass Valley
+        </span>
+        <span style={{
+          fontFamily: 'var(--font-body), system-ui, sans-serif',
+          fontSize: '9px', fontWeight: 400, letterSpacing: '0.2em',
+          color: 'rgba(200,170,120,0.6)', textTransform: 'uppercase', lineHeight: 1,
+        }}>
+          Electrical
+        </span>
+      </button>
+
+      {/* Desktop nav */}
+      <nav className="hidden md:flex" style={{ alignItems: 'center', gap: '32px' }} aria-label="Main navigation">
+        {navLinks.map(link => (
           <button
             key={link.id}
-            onClick={() => {
-              scrollToSection(link.id)
-              setMenuOpen(false)
+            onClick={() => jumpTo(link.id)}
+            style={{
+              background: 'none', border: 'none',
+              fontFamily: 'var(--font-body), system-ui, sans-serif',
+              fontSize: '12px', fontWeight: 400, letterSpacing: '0.08em',
+              color: 'rgba(200,180,140,0.7)', cursor: 'pointer', padding: 0,
+              transition: 'color 0.2s',
             }}
-            className="font-display text-4xl font-light text-[#f5ede0] tracking-wide hover:text-[#e8973a] transition-colors duration-200"
-            style={{ transitionDelay: menuOpen ? `${i * 60}ms` : "0ms" }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#d4903a' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,180,140,0.7)' }}
           >
             {link.label}
           </button>
         ))}
-        <a
-          href="tel:0412999842"
-          className="mt-4 font-body text-sm px-8 py-3 border border-[#c4701a] text-[#e8973a] tracking-widest hover:bg-[#c4701a] hover:text-[#0d0805] transition-all duration-200"
-        >
+        <a href="tel:0412999842" className="btn-outline">Call Jack</a>
+      </nav>
+
+      {/* Hamburger */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="md:hidden"
+        style={{
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          gap: '5px', width: '32px', height: '32px', position: 'relative',
+          zIndex: 60, border: 'none', background: 'none', cursor: 'pointer', padding: 0,
+        }}
+        aria-label="Toggle menu"
+        aria-expanded={menuOpen}
+      >
+        <span style={{
+          display: 'block', width: '24px', height: '1px', background: '#a09070',
+          transition: 'all 0.3s', transformOrigin: 'center',
+          transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none',
+        }} />
+        <span style={{
+          display: 'block', width: '24px', height: '1px', background: '#a09070',
+          transition: 'all 0.3s',
+          opacity: menuOpen ? 0 : 1, transform: menuOpen ? 'scaleX(0)' : 'none',
+        }} />
+        <span style={{
+          display: 'block', width: '24px', height: '1px', background: '#a09070',
+          transition: 'all 0.3s', transformOrigin: 'center',
+          transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none',
+        }} />
+      </button>
+
+      {/* Mobile menu */}
+      <div
+        className="md:hidden"
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(8, 5, 2, 0.98)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          zIndex: 40,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          gap: '40px',
+          transition: 'opacity 0.5s ease',
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? 'auto' : 'none',
+        }}
+      >
+        {navLinks.map((link, i) => (
+          <button
+            key={link.id}
+            onClick={() => { jumpTo(link.id); setMenuOpen(false) }}
+            style={{
+              fontFamily: 'var(--font-display), Georgia, serif',
+              fontSize: '2.5rem', fontWeight: 300,
+              color: '#f0e8d8', letterSpacing: '0.05em',
+              background: 'none', border: 'none', cursor: 'pointer',
+              transition: `color 0.2s ${i * 60}ms`,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#d4903a' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#f0e8d8' }}
+          >
+            {link.label}
+          </button>
+        ))}
+        <a href="tel:0412999842" className="btn-outline" style={{ marginTop: '16px' }}>
           Call Jack — 0412 999 842
         </a>
       </div>
